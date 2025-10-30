@@ -37,4 +37,39 @@ router.get('/login', (req, res) => {
   res.render('login', { pageTitle: 'Login' });
 });
 
+router.post('/login', (req, res) => {
+  const { username, password } = req.body;
+  
+  // --- FAKE LOGIN CHECK ---
+  // Baad mein yahan DB query chalegi: 
+  // "SELECT * FROM Users WHERE username = :user AND password = :pass"
+  if (username === 'admin' && password === 'admin123') {
+    
+    req.session.user = { 
+      username: username,
+      role: 'admin' 
+    };
+    
+    console.log('Login successful, session created.');
+    res.redirect('/dashboard'); 
+    
+  } else {
+    console.log('Login failed.');
+    res.redirect('/login'); 
+  }
+});
+
+
+router.get('/logout', (req, res) => {
+  
+  req.session.destroy((err) => {
+    if (err) {
+      console.log('Error destroying session:', err);
+    }
+    console.log('Session destroyed, user logged out.');
+    res.redirect('/'); 
+  });
+});
+
+
 export default router;

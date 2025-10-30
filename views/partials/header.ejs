@@ -6,9 +6,17 @@
       <li><a href="/dashboard">Dashboard</a></li>
       <li><a href="/stock">View Stock</a></li>
       <li><a href="/medicines">Manage Medicines</a></li>
-      <li><a href="/suppliers">Manage Suppliers</a></li> <li><a href="/reports">Reports</a></li>
-      <li><a href="/login">Login</a></li>
-    </ul>
+      <li><a href="/suppliers">Manage Suppliers</a></li>
+      <li><a href="/reports">Reports</a></li>
+      
+      <% if (locals.user) { %>
+        <li><a href="/logout" style="color: red; font-weight: bold;">
+          Logout (<%= locals.user.username %>)
+        </a></li>
+      <% } else { %>
+        <li><a href="/login">Login</a></li>
+      <% } %>
+      </ul>
   </nav>
   
   <ul style="background: #eee; padding: 5px;">
