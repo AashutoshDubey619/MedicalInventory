@@ -1,0 +1,39 @@
+<%- include('partials/header') %>
+
+  <h2>Add New Stock (Purchase)</h2>
+  
+  <form action="/stock/add" method="POST">
+    
+    <div>
+      <label for="medicine_id">Medicine:</label>
+      <select id="medicine_id" name="medicine_id" required>
+        <% medicines.forEach(med => { %>
+          <option value="<%= med.medicine_id %>"><%= med.name %></option>
+        <% }); %>
+      </select>
+    </div>
+    <br>
+    <div>
+      <label for="supplier_id">Supplier:</label>
+      <select id="supplier_id" name="supplier_id" required>
+        <% suppliers.forEach(sup => { %>
+          <option value="<%= sup.supplier_id %>"><%= sup.name %></option>
+        <% }); %>
+      </select>
+    </div>
+    <br>
+    <div>
+      <label for="quantity">Quantity:</label>
+      <input type="number" id="quantity" name="quantity" required>
+    </div>
+    <br>
+    <div>
+      <label for="expiry_date">Expiry Date:</label>
+      <input type="date" id="expiry_date" name="expiry_date" required>
+    </div>
+    <br>
+    <button type="submit">Add Stock</button>
+  
+  </form>
+
+<%- include('partials/footer') %>

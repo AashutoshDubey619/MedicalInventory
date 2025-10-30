@@ -1,6 +1,45 @@
 <%- include('partials/header') %>
 
-  <h1>Welcome to the Dashboard!</h1>
-  <p>Humara Node.js server EJS file ko render kar raha hai.</p>
-  
+  <h1>Dashboard</h1>
+  <p>System summary and alerts.</p>
+
+  <hr>
+
+  <div class="quick-links">
+    <a href="/stock" style="padding: 10px; background: #eee;">View Full Stock</a>
+    <a href="/stock/add" style="padding: 10px; background: #eee;">Add New Stock</a>
+    <a href="/stock/issue" style="padding: 10px; background: #eee;">Issue Stock</a>
+  </div>
+
+  <hr>
+
+  <div class="alerts" style="display: flex; gap: 20px;">
+    
+    <div class="alert-box" style="border: 1px solid red; padding: 15px;">
+      <h3><span style="color: red;"><%= lowStockItems.length %></span> Items Low on Stock</h3>
+      <ul>
+        <% lowStockItems.forEach(item => { %>
+          <li>
+            <%= item.name %> (Qty: <%= item.quantity_remaining %>)
+          </li>
+        <% }); %>
+      </ul>
+      <a href="/reports/low-stock">View Full Report</a>
+    </div>
+    
+    <div class="alert-box" style="border: 1px solid orange; padding: 15px;">
+      <h3><span style="color: orange;"><%= nearExpiryItems.length %></span> Batches Nearing Expiry</h3>
+      <ul>
+        <% nearExpiryItems.forEach(item => { %>
+          <li>
+            <%= item.batch_id %> | <%= item.name %> 
+            (Expires: <%= new Date(item.expiry_date).toLocaleDateString() %>)
+          </li>
+        <% }); %>
+      </ul>
+      <a href="/reports/near-expiry">View Full Report</a>
+    </div>
+
+  </div>
+
 <%- include('partials/footer') %>

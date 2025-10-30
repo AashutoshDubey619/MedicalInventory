@@ -1,0 +1,28 @@
+<%- include('partials/header') %>
+
+  <h2>Current Stock</h2>
+  
+  <table class="table" border="1" style="width:100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th>Batch ID</th>
+        <th>Medicine Name</th>
+        <th>Quantity Left</th>
+        <th>Expiry Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+      <% stockItems.forEach(item => { %>
+        <tr>
+          <td><%= item.batch_id %></td>
+          <td><%= item.name %></td>
+          <td><%= item.quantity_remaining %></td>
+          <td><%= new Date(item.expiry_date).toLocaleDateString() %></td>
+        </tr>
+      <% }); %>
+      
+    </tbody>
+  </table>
+
+<%- include('partials/footer') %>

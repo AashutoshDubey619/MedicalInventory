@@ -1,0 +1,29 @@
+<%- include('partials/header') %>
+
+  <h2>Issue Stock</h2>
+  
+  <form action="/stock/issue" method="POST">
+    
+    <div>
+      <label for="batch_id">Select Batch:</label>
+      <select id="batch_id" name="batch_id" required>
+        <option value="">-- Select a batch --</option>
+        
+        <% availableBatches.forEach(batch => { %>
+          <option value="<%= batch.batch_id %>">
+            <%= batch.batch_id %> | <%= batch.name %> (Qty: <%= batch.quantity_remaining %>)
+          </option>
+        <% }); %>
+      </select>
+    </div>
+    <br>
+    <div>
+      <label for="quantity_issued">Quantity to Issue:</label>
+      <input type="number" id="quantity_issued" name="quantity_issued" required min="1">
+    </div>
+    <br>
+    <button type="submit">Issue Stock</button>
+  
+  </form>
+
+<%- include('partials/footer') %>

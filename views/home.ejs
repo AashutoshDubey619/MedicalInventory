@@ -1,0 +1,20 @@
+<%- include('partials/header') %>
+
+  <h1 style="text-align: center;">Available Medicines</h1>
+  
+  <div class="card-container">
+    
+    <% medicines.forEach(med => { %>
+      
+      <div class="medicine-card">
+        
+        <img src="/images/medicines/<%= med.image_file %>" alt="<%= med.name %>">
+        
+        <div class="card-content">
+          <h3><%= med.name %></h3>
+          <p><%= med.description %></p>
+        </div>
+        
+      </div> <% }); %>
+    
+  </div> <%- include('partials/footer') %>
