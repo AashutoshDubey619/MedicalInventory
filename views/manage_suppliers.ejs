@@ -1,0 +1,51 @@
+<%- include('partials/header') %>
+
+  <h2>Manage Suppliers</h2>
+
+  <div class="add-form" style="padding: 15px; background: #f4f4f4; border: 1px solid #ddd; margin-bottom: 20px;">
+    <h3>Add New Supplier</h3>
+    <form action="/suppliers/add" method="POST">
+      <div>
+        <label for="name">Supplier Name:</label>
+        <input type="text" id="name" name="name" required>
+      </div>
+      <br>
+      <div>
+        <label for="contact_person">Contact Person:</label>
+        <input type="text" id="contact_person" name="contact_person">
+      </div>
+      <br>
+      <div>
+        <label for="phone">Phone:</label>
+        <input type="tel" id="phone" name="phone">
+      </div>
+      <br>
+      <button type="submit">Add Supplier</button>
+    </form>
+  </div>
+  
+  <hr>
+
+  <h3>Current Suppliers</h3>
+  <table border="1" style="width:100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Contact Person</th>
+        <th>Phone</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% suppliers.forEach(sup => { %>
+        <tr>
+          <td><%= sup.id %></td>
+          <td><%= sup.name %></td>
+          <td><%= sup.contact_person %></td>
+          <td><%= sup.phone %></td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+
+<%- include('partials/footer') %>

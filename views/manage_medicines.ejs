@@ -1,0 +1,44 @@
+<%- include('partials/header') %>
+
+  <h2>Manage Medicine Types</h2>
+
+  <div class="add-form" style="padding: 15px; background: #f4f4f4; border: 1px solid #ddd; margin-bottom: 20px;">
+    <h3>Add New Medicine</h3>
+    <form action="/medicines/add" method="POST">
+      <div>
+        <label for="name">Medicine Name (e.g., Paracetamol 500mg):</label>
+        <input type="text" id="name" name="name" required>
+      </div>
+      <br>
+      <div>
+        <label for="manufacturer">Manufacturer (e.g., Cipla):</label>
+        <input type="text" id="manufacturer" name="manufacturer">
+      </div>
+      <br>
+      <button type="submit">Add Medicine Type</button>
+    </form>
+  </div>
+  
+  <hr>
+
+  <h3>Current Medicine Types</h3>
+  <table border="1" style="width:100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Manufacturer</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% medicines.forEach(med => { %>
+        <tr>
+          <td><%= med.id %></td>
+          <td><%= med.name %></td>
+          <td><%= med.manufacturer %></td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+
+<%- include('partials/footer') %>
