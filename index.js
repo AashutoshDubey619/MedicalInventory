@@ -1,6 +1,8 @@
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
+const router = express.Router();
+import mainRoutes from './routes/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,7 +22,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 
 
-
+app.use('/', mainRoutes);
 
 
 
