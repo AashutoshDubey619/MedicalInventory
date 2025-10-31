@@ -8,13 +8,22 @@
       
       <div class="medicine-card">
         
-        <img src="/images/medicines/<%= med.image_file %>" alt="<%= med.name %>">
+        <img src="<%= med.IMAGE_FILENAME %>" alt="<%= med.NAME %>" 
+             onerror="this.src='https://placehold.co/250x180/eee/aaa?text=No+Image';">
         
         <div class="card-content">
-          <h3><%= med.name %></h3>
-          <p><%= med.description %></p>
+          <h3><%= med.NAME %></h3>
+          <p><%= med.DESCRIPTION %></p>
         </div>
         
-      </div> <% }); %>
+      </div>
+      
+    <% }); %>
     
-  </div> <%- include('partials/footer') %>
+    <% if (medicines.length === 0) { %>
+      <p style="text-align: center;">No medicines found in the system yet.</p>
+    <% } %>
+    
+  </div>
+
+<%- include('partials/footer') %>

@@ -2,6 +2,7 @@
 
   <h2>Manage Medicine Types</h2>
 
+  
   <div class="add-form" style="padding: 15px; background: #f4f4f4; border: 1px solid #ddd; margin-bottom: 20px;">
     <h3>Add New Medicine</h3>
     <form action="/medicines/add" method="POST">
@@ -15,27 +16,41 @@
         <input type="text" id="manufacturer" name="manufacturer">
       </div>
       <br>
+      <div>
+        <label for="image_filename">Image URL (e.g., https://.../image.jpg):</label>
+        <input type="text" id="image_filename" name="image_filename">
+      </div>
+      <br>
+      <div>
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" rows="3" style="width: 100%;"></textarea>
+      </div>
+      <br>
       <button type="submit">Add Medicine Type</button>
     </form>
   </div>
   
   <hr>
 
+  
   <h3>Current Medicine Types</h3>
   <table border="1" style="width:100%; border-collapse: collapse;">
     <thead>
       <tr>
-        <th>ID</th>
         <th>Name</th>
         <th>Manufacturer</th>
+        <th>Description</th>
+        <th>Image URL/File</th>
       </tr>
     </thead>
     <tbody>
+     
       <% medicines.forEach(med => { %>
         <tr>
-          <td><%= med.id %></td>
-          <td><%= med.name %></td>
-          <td><%= med.manufacturer %></td>
+          <td><%= med.NAME %></td>
+          <td><%= med.MANUFACTURER %></td>
+          <td><%= med.DESCRIPTION %></td>
+          <td><%= med.IMAGE_FILENAME %></td>
         </tr>
       <% }); %>
     </tbody>

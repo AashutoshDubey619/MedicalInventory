@@ -7,6 +7,7 @@
       <tr>
         <th>Batch ID</th>
         <th>Medicine Name</th>
+        <th>Supplier</th>
         <th>Quantity Left</th>
         <th>Expiry Date</th>
       </tr>
@@ -15,12 +16,19 @@
       
       <% stockItems.forEach(item => { %>
         <tr>
-          <td><%= item.batch_id %></td>
-          <td><%= item.name %></td>
-          <td><%= item.quantity_remaining %></td>
-          <td><%= new Date(item.expiry_date).toLocaleDateString() %></td>
+          <td><%= item.BATCH_ID %></td>
+          <td><%= item.NAME %></td>
+          <td><%= item.SUPPLIER_NAME %></td>
+          <td><%= item.QUANTITY_REMAINING %></td>
+          <td><%= new Date(item.EXPIRY_DATE).toLocaleDateString() %></td>
         </tr>
       <% }); %>
+      
+      <% if (stockItems.length === 0) { %>
+        <tr>
+          <td colspan="5" style="text-align: center;">No stock found. Please add stock.</td>
+        </tr>
+      <% } %>
       
     </tbody>
   </table>

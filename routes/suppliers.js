@@ -1,35 +1,96 @@
 import express from 'express';
-const router = express.Router();
 import { isLoggedIn } from '../middleware/auth.js';
+import { oracledb } from '../config/db.js';
+import { v4 as uuidv4 } from 'uuid';
+
+const router = express.Router();
+
 
 router.use(isLoggedIn);
 
-// --- FAKE DATA (List of all suppliers) ---
-const mockSuppliers = [
-  { id: 101, name: 'Apollo Pharmacy', contact_person: 'Mr. Sharma', phone: '9876543210' },
-  { id: 102, name: 'MedPlus', contact_person: 'Ms. Gupta', phone: '9876500011' },
-  { id: 103, name: 'Cipla Distributors', contact_person: 'Mr. Reddy', phone: '9988776655' }
-];
 
+router.get('/', async (req, res) => {
+  let connection;
+  let suppliers = []; 
 
-router.get('/', (req, res) => {
+  try {
+    
+    const { pharmacy_id } = req.session.user;
+    
+    connection = await oracledb.getConnection('default');
+    
+    
+    const sql = `
+      SELECT NAME, CONTACT_PERSON, PHONE 
+      FROM Suppliers 
+      WHERE pharmacy_id = :b_pid
+    `;
+    const result = await connection.execute(
+      sql, 
+      { b_pid: pharmacy_id },
+      { outFormat: oracledb.OUT_FORMAT_OBJECT } 
+    );
+
+    
+    suppliers = result.rows;
+
+  } catch (err) {
+    console.error("Error fetching suppliers:", err);
+  } finally {
+    if (connection) {
+      try { await connection.close(); } catch (err) { console.error(err); }
+    }
+  }
+
+  
   res.render('manage_suppliers', {
     pageTitle: 'Manage Suppliers',
-    suppliers: mockSuppliers
+    suppliers: suppliers 
   });
 });
 
 
-router.post('/add', (req, res) => {
-  const { name, contact_person, phone } = req.body;
-
-  console.log('--- New Supplier Added ---');
-  console.log('Name:', name);
-  console.log('Contact Person:', contact_person);
-  console.log('Phone:', phone);
-  // Yahan DB INSERT query chalegi 'Suppliers' table mein
-
+router.post('/add', async (req, res) => {
+  let connection;
   
+  try {
+    
+    const { name, contact_person, phone } = req.body;
+    const { pharmacy_id } = req.session.user;
+    
+    
+    const newSupplierId = uuidv4();
+
+    connection = await oracledb.getConnection('default');
+    
+    const sql = `
+      INSERT INTO Suppliers (supplier_id, pharmacy_id, name, contact_person, phone)
+      VALUES (:b_sid, :b_pid, :b_name, :b_contact, :b_phone)
+    `;
+    
+    await connection.execute(sql, 
+      {
+        b_sid: newSupplierId,
+        b_pid: pharmacy_id,
+        b_name: name,
+        b_contact: contact_person,
+        b_phone: phone
+      },
+      { autoCommit: true } // autoCommit
+    );
+
+    console.log("New supplier added successfully.");
+    
+  } catch (err) {
+    console.error("Error inserting supplier:", err);
+  } finally {
+    if (connection) {
+      try { await connection.close(); } catch (err) { console.error(err); }
+    }
+  }
+
+ 
   res.redirect('/suppliers');
 });
+
 export default router;

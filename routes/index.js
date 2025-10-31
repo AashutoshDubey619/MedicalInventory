@@ -6,56 +6,122 @@ import { v4 as uuidv4 } from 'uuid';
 
 const router = express.Router();
 
-// --- FAKE DATA ---
-const mockCatalog = [
-  { id: 1, name: 'Paracetamol 500mg', description: 'Fever aur pain relief.', image_file: 'paracetamol.jpg' },
-  { id: 2, name: 'Cough Syrup (100ml)', description: 'Sookhi khaansi ke liye.', image_file: 'cough-syrup.jpg' }
-];
-const mockLowStock = [
-  { name: 'Cough Syrup', quantity_remaining: 40 },
-  { name: 'Amoxicillin 250mg', quantity_remaining: 75 }
-];
-const mockNearExpiry = [
-  { batch_id: 'B1003', name: 'Cough Syrup', expiry_date: '2025-05-20' }
-];
+router.get('/', async (req, res) => {
+  let connection;
+  let medicines = [];
 
-// --- GET Routes ---
-router.get('/', (req, res) => {
-  res.render('home', { pageTitle: 'Home', medicines: mockCatalog });
+  try {
+    connection = await oracledb.getConnection('default');
+    
+    const sql = `
+      SELECT NAME, MANUFACTURER, IMAGE_FILENAME, DESCRIPTION 
+      FROM Medicines
+      ORDER BY NAME
+    `;
+    const result = await connection.execute(
+      sql, 
+      {},
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
+    );
+    
+    medicines = result.rows;
+
+  } catch (err) {
+    console.error("Error fetching homepage medicines:", err);
+  } finally {
+    if (connection) {
+      try { await connection.close(); } catch (err) { console.error(err); }
+    }
+  }
+
+  res.render('home', { 
+    pageTitle: 'Home',
+    medicines: medicines
+  });
 });
-router.get('/dashboard', isLoggedIn, (req, res) => {
-  res.render('dashboard', { pageTitle: 'Dashboard', lowStockItems: mockLowStock, nearExpiryItems: mockNearExpiry });
+
+router.get('/dashboard', isLoggedIn, async (req, res) => {
+  let connection;
+  let lowStockItems = [];
+  let nearExpiryItems = [];
+
+  try {
+    const { pharmacy_id } = req.session.user;
+    connection = await oracledb.getConnection('default');
+
+    const lowStockSql = `SELECT * FROM LowStockReport WHERE pharmacy_id = :pid`;
+    const lowStockResult = await connection.execute(
+      lowStockSql, 
+      { pid: pharmacy_id },
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
+    );
+
+    const nearExpirySql = `SELECT * FROM NearExpiryReport WHERE pharmacy_id = :pid`;
+    const nearExpiryResult = await connection.execute(
+      nearExpirySql, 
+      { pid: pharmacy_id },
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
+    );
+    
+    lowStockItems = lowStockResult.rows.map(item => ({
+        name: item.NAME,
+        quantity_remaining: item.TOTAL_QUANTITY
+    }));
+    
+    nearExpiryItems = nearExpiryResult.rows.map(item => ({
+        batch_id: item.BATCH_ID,
+        name: item.NAME,
+        expiry_date: item.EXPIRY_DATE,
+        quantity_remaining: item.QUANTITY_REMAINING
+    }));
+
+  } catch (err) {
+    console.error('Error fetching dashboard data:', err);
+  } finally {
+    if (connection) {
+      try { await connection.close(); } catch (err) { console.error(err); }
+    }
+  }
+  
+  res.render('dashboard', { 
+    pageTitle: 'Dashboard',
+    lowStockItems: lowStockItems,
+    nearExpiryItems: nearExpiryItems
+  });
 });
+
 router.get('/login', (req, res) => {
   res.render('login', { pageTitle: 'Login' });
 });
+
 router.get('/logout', (req, res) => {
   req.session.destroy((err) => {
     console.log('Session destroyed, user logged out.');
     res.redirect('/'); 
   });
 });
+
 router.get('/signup', (req, res) => {
   res.render('signup', { pageTitle: 'Sign Up' });
 });
 
-
-// --- POST /login (FIXED: :user ko :uname kiya) ---
-// (Blackbox ka original fix abhi bhi zaroori hai)
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
   let connection;
 
   try {
-    connection = await oracledb.getConnection('default');
+    connection = await oracledb.getConnection('default'); 
     
-    // :user ko :uname kiya
     const sql = `
-      SELECT user_id, pharmacy_id, password_hash, role, username 
+      SELECT USER_ID, PHARMACY_ID, PASSWORD_HASH, ROLE, USERNAME 
       FROM Users 
-      WHERE username = :uname 
+      WHERE username = :b_uname
     `;
-    const result = await connection.execute(sql, { uname: username }); // :uname
+    const result = await connection.execute(
+      sql, 
+      { b_uname: username },
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
+    );
 
     if (result.rows.length === 0) {
       console.log('Login failed: User not found.');
@@ -63,7 +129,14 @@ router.post('/login', async (req, res) => {
     }
 
     const user = result.rows[0];
-    const isPasswordValid = await bcrypt.compare(password, user.PASSWORD_HASH);
+
+    if (!password || !user.PASSWORD_HASH) {
+      console.log('Login failed: Missing password or stored hash.');
+      return res.redirect('/login');
+    }
+    
+    const cleanHash = user.PASSWORD_HASH.trim();
+    const isPasswordValid = await bcrypt.compare(password, cleanHash);
 
     if (isPasswordValid) {
       req.session.user = {
@@ -88,53 +161,47 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// --- POST /signup (FIXED: :pass aur :role ko bhi rename kiya) ---
 router.post('/signup', async (req, res) => {
   const { pharmacy_name, username, password } = req.body;
   let connection;
 
-  console.log('--- SIGNUP: Route started (Thick Mode) ---');
-
   try {
     const saltRounds = 10;
     const password_hash = await bcrypt.hash(password, saltRounds);
-    console.log('--- SIGNUP: Password hashed ---');
 
     const newPharmacyId = uuidv4();
     const newUserId = uuidv4();
 
     connection = await oracledb.getConnection('default');
-    console.log('--- SIGNUP: Pool connection established ---');
 
     const pharmacySql = `
       INSERT INTO Pharmacies (pharmacy_id, pharmacy_name)
-      VALUES (:pid, :pname)
+      VALUES (:b_pid, :b_pname)
     `;
     await connection.execute(pharmacySql, 
-      { pid: newPharmacyId, pname: pharmacy_name },
+      { 
+        b_pid: newPharmacyId, 
+        b_pname: pharmacy_name 
+      },
       { autoCommit: false } 
     );
-    console.log('--- SIGNUP: 1. Pharmacy INSERTED ---');
 
-    // :user -> :uname, :pass -> :phash, :role -> :prole
     const userSql = `
       INSERT INTO Users (user_id, pharmacy_id, username, password_hash, role)
-      VALUES (:uid, :pid, :uname, :phash, :prole)
+      VALUES (:b_uid, :b_pid, :b_uname, :b_phash, :b_prole)
     `;
     await connection.execute(userSql,
       { 
-        uid: newUserId, 
-        pid: newPharmacyId, 
-        uname: username, // FIX 1
-        phash: password_hash, // FIX 2
-        prole: 'admin' // FIX 3
+        b_uid: newUserId, 
+        b_pid: newPharmacyId, 
+        b_uname: username,
+        b_phash: password_hash, 
+        b_prole: 'admin'
       },
       { autoCommit: false }
     );
-    console.log('--- SIGNUP: 2. User INSERTED ---');
     
     await connection.commit();
-    console.log('--- SIGNUP: 3. COMMIT complete ---');
     
     console.log('New pharmacy and admin user created.');
 
@@ -157,7 +224,6 @@ router.post('/signup', async (req, res) => {
     if (connection) {
       try {
         await connection.close(); 
-        console.log('--- SIGNUP: Connection closed ---');
       } catch (err) {
         console.error('Error closing connection:', err);
       }
