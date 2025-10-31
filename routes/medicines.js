@@ -1,6 +1,8 @@
 import express from 'express';
 const router = express.Router();
+import { isLoggedIn } from '../middleware/auth.js';
 
+router.use(isLoggedIn);
 
 const mockMedicineTypes = [
   { id: 1, name: 'Paracetamol 500mg', manufacturer: 'Cipla' },

@@ -1,5 +1,8 @@
 import express from 'express';
 const router = express.Router();
+import { isLoggedIn } from '../middleware/auth.js';
+
+router.use(isLoggedIn);
 
 // --- FAKE DATA (List of all suppliers) ---
 const mockSuppliers = [

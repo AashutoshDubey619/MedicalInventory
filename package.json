@@ -11,10 +11,12 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
     "express-session": "^1.18.2",
     "nodemon": "^3.1.10",
-    "oracledb": "^6.10.0"
+    "oracledb": "^6.10.0",
+    "uuid": "^13.0.0"
   }
 }

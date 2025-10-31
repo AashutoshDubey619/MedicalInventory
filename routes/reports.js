@@ -1,5 +1,9 @@
 import express from 'express';
 const router = express.Router();
+import { isLoggedIn } from '../middleware/auth.js';
+
+router.use(isLoggedIn);
+
 
 // --- FAKE DATA (Low Stock Report) ---
 const mockLowStock = [

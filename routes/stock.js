@@ -1,6 +1,8 @@
 import express from 'express';
 const router = express.Router();
+import { isLoggedIn } from '../middleware/auth.js';      
 
+router.use(isLoggedIn);
 
 const mockStock = [
   { batch_id: 'B1001', name: 'Paracetamol 500mg', quantity_remaining: 150, expiry_date: '2026-10-31' },
