@@ -1,27 +1,42 @@
 <%- include('partials/header') %>
 
-  <h2>Create New Pharmacy Account</h2>
-  
-  <form action="/signup" method="POST">
+<div class="row">
+  <!-- Form ko screen ke center mein laane ke liye -->
+  <div class="col-lg-6 col-md-8 mx-auto">
     
-    <div>
-      <label for="pharmacy_name">Pharmacy Name:</label>
-      <input type="text" id="pharmacy_name" name="pharmacy_name" required>
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="card-title text-center">Create New Account</h2>
+        
+        <form action="/signup" method="POST">
+          
+          <div class="mb-3">
+            <label for="pharmacy_name" class="form-label">Pharmacy Name:</label>
+            <input type="text" class="form-control" id="pharmacy_name" name="pharmacy_name" required>
+          </div>
+          
+          <div class="mb-3">
+            <label for="username" class="form-label">Your Username:</label>
+            <input type="text" class="form-control" id="username" name="username" required>
+          </div>
+          
+          <div class="mb-3">
+            <label for="password" class="form-label">Password:</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+          </div>
+          
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary btn-lg">Create Account</button>
+          </div>
+        
+        </form>
+      </div>
+      <div class="card-footer text-center">
+        <p class="mb-0">Already have an account? <a href="/login">Login here</a></p>
+      </div>
     </div>
-    <br>
-    <div>
-      <label for="username">Your Username:</label>
-      <input type="text" id="username" name="username" required>
-    </div>
-    <br>
-    <div>
-      <label for="password">Password:</label>
-      <input type="password" id="password" name="password" required>
-    </div>
-    <br>
-    <button type="submit">Create Account</button>
-  </form>
-  
-  <p>Already have an account? <a href="/login">Login here</a></p>
+
+  </div>
+</div>
 
 <%- include('partials/footer') %>

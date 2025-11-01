@@ -1,24 +1,36 @@
 <%- include('partials/header') %>
 
-  <h2>Login to System</h2>
-  
-  <form action="/login" method="POST">
+<div class="row">
+  <div class="col-lg-6 col-md-8 mx-auto">
     
-   
-    <div>
-      <label for="username">Username:</label>
-      <input type="text" id="username" name="username" required>
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="card-title text-center">Login to System</h2>
+        
+        <form action="/login" method="POST">
+          
+          <div class="mb-3">
+            <label for="username" class="form-label">Username:</label>
+            <input type="text" class="form-control" id="username" name="username" required>
+          </div>
+          
+          <div class="mb-3">
+            <label for="password" class="form-label">Password:</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+          </div>
+          
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary btn-lg">Login</button>
+          </div>
+        
+        </form>
+      </div>
+      <div class="card-footer text-center">
+        <p class="mb-0">Don't have an account? <a href="/signup">Create one here</a></p>
+      </div>
     </div>
-    <br>
-    <div>
-      <label for="password">Password:</label>
-      <input type="password" id="password" name="password" required>
-    </div>
-    <br>
-    
-    <button type="submit">Login</button>
-  </form>
-  
-  <p>Don't have an account? <a href="/signup">Create one here</a></p>
+
+  </div>
+</div>
 
 <%- include('partials/footer') %>

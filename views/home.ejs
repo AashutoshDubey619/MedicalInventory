@@ -1,29 +1,42 @@
 <%- include('partials/header') %>
 
-  <h1 style="text-align: center;">Available Medicines</h1>
-  
-  <div class="card-container">
+  <div class="container py-4">
+    <div class="p-4 mb-4 bg-white rounded-3 shadow-sm">
+      <div class="container-fluid py-3">
+        <h1 class="display-5 fw-bold text-center">Available Medicines</h1>
+        <p class="fs-5 text-center text-muted">Browse our public catalog of medicines.</p>
+      </div>
+    </div>
     
-    <% medicines.forEach(med => { %>
+    <!-- Bootstrap Grid System -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
       
-      <div class="medicine-card">
+      <% medicines.forEach(med => { %>
         
-        <img src="<%= med.IMAGE_FILENAME %>" alt="<%= med.NAME %>" 
-             onerror="this.src='https://placehold.co/250x180/eee/aaa?text=No+Image';">
-        
-        <div class="card-content">
-          <h3><%= med.NAME %></h3>
-          <p><%= med.DESCRIPTION %></p>
+        <div class="col">
+          <!-- Bootstrap Card -->
+          <div class="card h-100 shadow-sm">
+            <img src="<%= med.IMAGE_FILENAME %>" class="card-img-top" alt="<%= med.NAME %>" 
+                 style="height: 200px; object-fit: cover;"
+                 onerror="this.src='https://placehold.co/250x180/eee/aaa?text=No+Image';">
+            
+            <div class="card-body">
+              <h5 class="card-title"><%= med.NAME %></h5>
+              <p class="card-text text-muted"><%= med.DESCRIPTION %></p>
+            </div>
+            
+          </div>
         </div>
         
-      </div>
+      <% }); %>
       
-    <% }); %>
-    
-    <% if (medicines.length === 0) { %>
-      <p style="text-align: center;">No medicines found in the system yet.</p>
-    <% } %>
-    
+      <% if (medicines.length === 0) { %>
+        <div class="col-12">
+          <p class="text-center fs-4 text-muted">No medicines found in the system yet.</p>
+        </div>
+      <% } %>
+      
+    </div>
   </div>
 
 <%- include('partials/footer') %>

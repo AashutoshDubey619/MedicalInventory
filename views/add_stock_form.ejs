@@ -1,51 +1,65 @@
 <%- include('partials/header') %>
 
-  <h2>Add New Stock (Purchase)</h2>
-  
-  <form action="/stock/add" method="POST">
-    
-    <div>
-      <label for="medicine_id">Medicine:</label>
-      <select id="medicine_id" name="medicine_id" required>
-        <option value="">-- Select Medicine --</option>
-        <% medicines.forEach(med => { %>
-          <option value="<%= med.MEDICINE_ID %>"><%= med.NAME %></option>
-        <% }); %>
-      </select>
+  <div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h2 class="mb-0">Add New Stock (Purchase)</h2>
+        </div>
+        <div class="card-body">
+          
+          <form action="/stock/add" method="POST">
+            
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="medicine_id" class="form-label">Medicine:</label>
+                <select class="form-select" id="medicine_id" name="medicine_id" required>
+                  <option value="" disabled selected>-- Select a medicine --</option>
+                  <% medicines.forEach(med => { %>
+                    <option value="<%= med.MEDICINE_ID %>"><%= med.NAME %></option>
+                  <% }); %>
+                </select>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="supplier_id" class="form-label">Supplier:</label>
+                <select class="form-select" id="supplier_id" name="supplier_id" required>
+                  <option value="" disabled selected>-- Select a supplier --</option>
+                  <% suppliers.forEach(sup => { %>
+                    <option value="<%= sup.SUPPLIER_ID %>"><%= sup.NAME %></option>
+                  <% }); %>
+                </select>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="quantity" class="form-label">Quantity Received:</label>
+                <input type="number" class="form-control" id="quantity" name="quantity" required min="1">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="cost_per_unit" class="form-label">Cost Per Unit (Optional):</label>
+                <input type="number" class="form-control" id="cost_per_unit" name="cost_per_unit" step="0.01" min="0">
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="purchase_date" class="form-label">Purchase Date:</label>
+                <input type="date" class="form-control" id="purchase_date" name="purchase_date" value="<%= new Date().toISOString().split('T')[0] %>" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="expiry_date" class="form-label">Expiry Date:</label>
+                <input type="date" class="form-control" id="expiry_date" name="expiry_date" required>
+              </div>
+            </div>
+            
+            <button type="submit" class="btn btn-success btn-lg">Add Stock to Inventory</button>
+          
+          </form>
+        </div>
+      </div>
     </div>
-    <br>
-    <div>
-      <label for="supplier_id">Supplier:</label>
-      <select id="supplier_id" name="supplier_id">
-        <option value="">-- Select Supplier (Optional) --</option>
-        <% suppliers.forEach(sup => { %>
-          <option value="<%= sup.SUPPLIER_ID %>"><%= sup.NAME %></option>
-        <% }); %>
-      </select>
-    </div>
-    <br>
-    <div>
-      <label for="quantity">Quantity:</label>
-      <input type="number" id="quantity" name="quantity" required min="1">
-    </div>
-    <br>
-    <div>
-      <label for="expiry_date">Expiry Date:</label>
-      <input type="date" id="expiry_date" name="expiry_date" required>
-    </div>
-    <br>
-    <div>
-      <label for="cost_per_unit">Cost Per Unit (Optional):</label>
-      <input type="number" id="cost_per_unit" name="cost_per_unit" step="0.01">
-    </div>
-    <br>
-    <div>
-      <label for="purchase_date">Purchase Date (Optional):</label>
-      <input type="date" id="purchase_date" name="purchase_date">
-    </div>
-    <br>
-    <button type="submit">Add Stock</button>
-  
-  </form>
+  </div>
+
 
 <%- include('partials/footer') %>

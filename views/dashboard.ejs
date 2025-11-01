@@ -1,45 +1,74 @@
 <%- include('partials/header') %>
 
-  <h1>Dashboard</h1>
-  <p>System summary and alerts.</p>
+  <h1 class="mb-4">Dashboard</h1>
 
-  <hr>
-
-  <div class="quick-links">
-    <a href="/stock" style="padding: 10px; background: #eee;">View Full Stock</a>
-    <a href="/stock/add" style="padding: 10px; background: #eee;">Add New Stock</a>
-    <a href="/stock/issue" style="padding: 10px; background: #eee;">Issue Stock</a>
+  
+  <div class="card shadow-sm mb-4">
+    <div class="card-header">
+      <h5 class="mb-0">Quick Actions</h5>
+    </div>
+    <div class="card-body d-flex flex-wrap gap-2">
+      <a href="/stock" class="btn btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-view-list" viewBox="0 0 16 16" style="margin-top: -3px; margin-right: 3px;"><path d="M3 4.5h10a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1H3zM1 2a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 2zm0 12a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 14z"/></svg>
+        View Full Stock
+      </a>
+      <a href="/stock/add" class="btn btn-success">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16" style="margin-top: -3px; margin-right: 3px;"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
+        Add New Stock
+      </a>
+      <a href="/stock/issue" class="btn btn-warning">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16" style="margin-top: -3px; margin-right: 3px;"><path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/><path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/></svg>
+        Issue Stock
+      </a>
+    </div>
   </div>
 
-  <hr>
-
-  <div class="alerts" style="display: flex; gap: 20px;">
+  
+  <div class="row">
     
-    <div class="alert-box" style="border: 1px solid red; padding: 15px;">
-      <h3><span style="color: red;"><%= lowStockItems.length %></span> Items Low on Stock</h3>
-      <ul>
-        <% lowStockItems.forEach(item => { %>
-          <li>
-            <%= item.name %> (Qty: <%= item.quantity_remaining %>)
-          </li>
-        <% }); %>
-      </ul>
-      <a href="/reports/low-stock">View Full Report</a>
+    <div class="col-md-6">
+      <div class="card shadow-sm border-danger">
+        <div class="card-header bg-danger text-white">
+          <h5 class="mb-0">Low Stock Alert</h5>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title text-danger"><%= lowStockItems.length %> Items</h3>
+          <p class="card-text">are running low on stock.</p>
+          <ul class="list-group list-group-flush mb-3">
+            <% lowStockItems.forEach(item => { %>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <%= item.name %>
+                <span class="badge bg-danger rounded-pill"><%= item.quantity_remaining %> left</span>
+              </li>
+            <% }); %>
+          </ul>
+          <a href="/reports/low-stock" class="btn btn-outline-danger">View Full Report</a>
+        </div>
+      </div>
     </div>
     
-    <div class="alert-box" style="border: 1px solid orange; padding: 15px;">
-      <h3><span style="color: orange;"><%= nearExpiryItems.length %></span> Batches Nearing Expiry</h3>
-      <ul>
-        <% nearExpiryItems.forEach(item => { %>
-          <li>
-            <%= item.batch_id %> | <%= item.name %> 
-            (Expires: <%= new Date(item.expiry_date).toLocaleDateString() %>)
-          </li>
-        <% }); %>
-      </ul>
-      <a href="/reports/near-expiry">View Full Report</a>
+    
+    <div class="col-md-6">
+      <div class="card shadow-sm border-warning">
+        <div class="card-header bg-warning text-dark">
+          <h5 class="mb-0">Near Expiry Alert</h5>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title text-warning"><%= nearExpiryItems.length %> Batches</h3>
+          <p class="card-text">are expiring in the next 30 days.</p>
+          <ul class="list-group list-group-flush mb-3">
+            <% nearExpiryItems.forEach(item => { %>
+              <li class="list-group-item">
+                <%= item.name %> (Batch: <%= item.batch_id %>)
+                <br>
+                <small class="text-muted">Expires: <%= new Date(item.expiry_date).toLocaleDateString() %></small>
+              </li>
+            <% }); %>
+          </ul>
+          <a href="/reports/near-expiry" class="btn btn-outline-warning text-dark">View Full Report</a>
+        </div>
+      </div>
     </div>
-
   </div>
 
 <%- include('partials/footer') %>

@@ -1,34 +1,46 @@
 <%- include('partials/header') %>
 
-  <h2>Issue Stock</h2>
-  
-  <form action="/stock/issue" method="POST">
-    
-    <div>
-      <label for="batch_id">Select Batch:</label>
-      <select id="batch_id" name="batch_id" required>
-        <option value="">-- Select a batch --</option>
-        
-        <% availableBatches.forEach(batch => { %>
-          <option value="<%= batch.BATCH_ID %>">
-            <%= batch.BATCH_ID %> | <%= batch.NAME %> (Qty: <%= batch.QUANTITY_REMAINING %>)
-          </option>
-        <% }); %>
-      </select>
+  <div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h2 class="mb-0">Issue Stock</h2>
+        </div>
+        <div class="card-body">
+          
+          <form action="/stock/issue" method="POST">
+            
+            <div class="mb-3">
+              <label for="batch_id" class="form-label">Select Batch:</label>
+              <select class="form-select" id="batch_id" name="batch_id" required>
+                <option value="" disabled selected>-- Select a batch to issue from --</option>
+                <% availableBatches.forEach(batch => { %>
+                  <option value="<%= batch.BATCH_ID %>">
+                    Batch: <%= batch.BATCH_ID %> | <%= batch.MEDICINE_NAME %> (Qty: <%= batch.QUANTITY_REMAINING %>, Expires: <%= new Date(batch.EXPIRY_DATE).toLocaleDateString() %>)
+                  </option>
+                <% }); %>
+                <% if (availableBatches.length === 0) { %>
+                  <option value="" disabled>No stock available to issue.</option>
+                <% } %>
+              </select>
+            </div>
+            
+            <div class="mb-3">
+              <label for="quantity_issued" class="form-label">Quantity to Issue:</label>
+              <input type="number" class="form-control" id="quantity_issued" name="quantity_issued" required min="1">
+            </div>
+
+            <div class="mb-3">
+              <label for="issued_to" class="form-label">Issued To (Optional, e.g., Patient Name):</label>
+              <input type="text" class="form-control" id="issued_to" name="issued_to">
+            </div>
+            
+            <button type="submit" class="btn btn-warning btn-lg">Issue Stock</button>
+          
+          </form>
+        </div>
+      </div>
     </div>
-    <br>
-    <div>
-      <label for="quantity_issued">Quantity to Issue:</label>
-      <input type="number" id="quantity_issued" name="quantity_issued" required min="1">
-    </div>
-    <br>
-    <div>
-      <label for="issued_to">Issued To (Optional):</label>
-      <input type="text" id="issued_to" name="issued_to">
-    </div>
-    <br>
-    <button type="submit">Issue Stock</button>
-  
-  </form>
+  </div>
 
 <%- include('partials/footer') %>

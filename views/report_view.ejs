@@ -11,11 +11,20 @@
       </tr>
     </thead>
     <tbody>
+      
+      <% if (items.length === 0) { %>
+        <tr>
+          <td colspan="<%= headers.length %>" style="text-align: center; padding: 10px;">
+            No data found for this report.
+          </td>
+        </tr>
+      <% } %>
+
       <% items.forEach(item => { %>
         <tr>
           <% Object.values(item).forEach(value => { %>
             
-            <% if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}$/)) { %>
+            <% if (value instanceof Date) { %>
               <td><%= new Date(value).toLocaleDateString() %></td>
             <% } else { %>
               <td><%= value %></td>
