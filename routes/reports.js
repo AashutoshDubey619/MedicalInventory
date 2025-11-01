@@ -20,7 +20,12 @@ router.get('/low-stock', async (req, res) => {
     const { pharmacy_id } = req.session.user;
     connection = await oracledb.getConnection('default');
     
-    const sql = `SELECT * FROM LowStockReport WHERE pharmacy_id = :pid`;
+    const sql = `
+      SELECT NAME, SUPPLIER_NAME, TOTAL_QUANTITY 
+      FROM LowStockReport 
+      WHERE pharmacy_id = :pid
+      ORDER BY NAME
+    `;
     
     const result = await connection.execute(
       sql,
@@ -41,7 +46,7 @@ router.get('/low-stock', async (req, res) => {
   res.render('report_view', {
     pageTitle: 'Low Stock Report',
     reportName: 'Low Stock Report',
-    headers: ['Medicine Name', 'Total Quantity Remaining'],
+    headers: ['Medicine Name', 'Supplier', 'Total Quantity Remaining'],
     items: items
   });
 });
@@ -54,7 +59,12 @@ router.get('/near-expiry', async (req, res) => {
     const { pharmacy_id } = req.session.user;
     connection = await oracledb.getConnection('default');
     
-    const sql = `SELECT * FROM NearExpiryReport WHERE pharmacy_id = :pid ORDER BY EXPIRY_DATE ASC`;
+    const sql = `
+      SELECT BATCH_ID, NAME, SUPPLIER_NAME, EXPIRY_DATE, QUANTITY_REMAINING 
+      FROM NearExpiryReport 
+      WHERE pharmacy_id = :pid 
+      ORDER BY EXPIRY_DATE ASC
+    `;
     
     const result = await connection.execute(
       sql,
@@ -75,7 +85,7 @@ router.get('/near-expiry', async (req, res) => {
   res.render('report_view', {
     pageTitle: 'Near Expiry Report',
     reportName: 'Near Expiry Report (Next 30 Days)',
-    headers: ['Batch ID', 'Medicine Name', 'Expiry Date', 'Quantity Left'],
+    headers: ['Batch ID', 'Medicine Name', 'Supplier', 'Expiry Date', 'Quantity Left'],
     items: items
   });
 });
