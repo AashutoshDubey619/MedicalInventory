@@ -6,21 +6,30 @@ import { v4 as uuidv4 } from 'uuid';
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/', isLoggedIn, async (req, res) => {
   let connection;
   let medicines = [];
 
   try {
+    const { pharmacy_id } = req.session.user;
     connection = await oracledb.getConnection('default');
     
     const sql = `
-      SELECT NAME, MANUFACTURER, IMAGE_FILENAME, DESCRIPTION 
-      FROM Medicines
-      ORDER BY NAME
+      SELECT 
+        m.NAME, 
+        m.DESCRIPTION, 
+        m.IMAGE_FILENAME,
+        COALESCE(SUM(s.quantity_remaining), 0) AS TOTAL_QUANTITY,
+        AVG(s.cost_per_unit) AS AVG_PRICE
+      FROM Medicines m
+      LEFT JOIN Stock s ON m.medicine_id = s.medicine_id AND s.quantity_remaining > 0
+      WHERE m.pharmacy_id = :b_pid
+      GROUP BY m.medicine_id, m.NAME, m.DESCRIPTION, m.IMAGE_FILENAME
+      ORDER BY m.NAME
     `;
     const result = await connection.execute(
       sql, 
-      {},
+      { b_pid: pharmacy_id },
       { outFormat: oracledb.OUT_FORMAT_OBJECT }
     );
     
@@ -97,7 +106,7 @@ router.get('/login', (req, res) => {
 router.get('/logout', (req, res) => {
   req.session.destroy((err) => {
     console.log('Session destroyed, user logged out.');
-    res.redirect('/'); 
+    res.redirect('/login'); 
   });
 });
 

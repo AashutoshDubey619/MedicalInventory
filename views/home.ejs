@@ -3,26 +3,56 @@
   <div class="container py-4">
     <div class="p-4 mb-4 bg-white rounded-3 shadow-sm">
       <div class="container-fluid py-3">
-        <h1 class="display-5 fw-bold text-center">Available Medicines</h1>
-        <p class="fs-5 text-center text-muted">Browse our public catalog of medicines.</p>
+        <h1 class="display-5 fw-bold text-center">My Medicine Catalog</h1>
+        <p class="fs-5 text-center text-muted">A live overview of your pharmacy's inventory.</p>
       </div>
     </div>
     
-    <!-- Bootstrap Grid System -->
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
       
       <% medicines.forEach(med => { %>
         
         <div class="col">
-          <!-- Bootstrap Card -->
           <div class="card h-100 shadow-sm">
+            
             <img src="<%= med.IMAGE_FILENAME %>" class="card-img-top" alt="<%= med.NAME %>" 
                  style="height: 200px; object-fit: cover;"
                  onerror="this.src='https://placehold.co/250x180/eee/aaa?text=No+Image';">
             
             <div class="card-body">
               <h5 class="card-title"><%= med.NAME %></h5>
-              <p class="card-text text-muted"><%= med.DESCRIPTION %></p>
+              <p class="card-text text-muted" style="min-height: 48px;"><%= med.DESCRIPTION %></p>
+            </div>
+            
+            <div class="card-footer bg-white">
+              <div class="d-flex justify-content-between align-items-center">
+                
+                <div class="price-box">
+                  <span class="fw-bold fs-5">
+                    <% if (med.AVG_PRICE) { %>
+                      $<%= med.AVG_PRICE.toFixed(2) %>
+                    <% } else { %>
+                      N/A
+                    <% } %>
+                  </span>
+                  <span class="text-muted small d-block" style="font-size: 0.8rem;">(Avg. Cost)</span>
+                </div>
+                
+                <div class="quantity-box">
+                  <span class="badge fs-6
+                    <% if (med.TOTAL_QUANTITY <= 0) { %>
+                      bg-danger
+                    <% } else if (med.TOTAL_QUANTITY <= 20) { %>
+                      bg-warning text-dark
+                    <% } else { %>
+                      bg-success
+                    <% } %>
+                  ">
+                    <%= med.TOTAL_QUANTITY %> Available
+                  </span>
+                </div>
+
+              </div>
             </div>
             
           </div>
@@ -32,7 +62,9 @@
       
       <% if (medicines.length === 0) { %>
         <div class="col-12">
-          <p class="text-center fs-4 text-muted">No medicines found in the system yet.</p>
+          <p class="text-center fs-4 text-muted">No medicines found. 
+            <a href="/medicines">Add a medicine type</a> first.
+          </p>
         </div>
       <% } %>
       
