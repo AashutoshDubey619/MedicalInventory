@@ -3,7 +3,7 @@ import oracledb from 'oracledb';
 const dbConfig = {
   user: 'inventory_user',
   password: 'MyPassword123',
-  connectString: 'localhost:1522/XE' // Port 1522
+  connectString: 'localhost:1522/XE' 
 };
 
 async function initialize() {
@@ -12,11 +12,11 @@ async function initialize() {
       ...dbConfig,
       poolAlias: 'default',
       
-      // --- YEH LINES UPDATE HUI HAIN ---
-      poolMin: 1, // 0 ki jagah 1 se start karein
-      poolMax: 4, // 4 theek hai
-      poolIncrement: 1 // 0 ki jagah 1 rakhein
-      // --- UPDATE ENDS ---
+      
+      poolMin: 1, 
+      poolMax: 4, 
+      poolIncrement: 1 
+      
     });
     console.log('Oracle DB connection pool initialized (inventory_user, Thick Mode).');
   } catch (err) {
