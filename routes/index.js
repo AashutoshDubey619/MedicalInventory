@@ -37,6 +37,7 @@ router.get('/', isLoggedIn, async (req, res) => {
 
   } catch (err) {
     console.error("Error fetching homepage medicines:", err);
+    req.flash('error', 'Could not load homepage catalog.');
   } finally {
     if (connection) {
       try { await connection.close(); } catch (err) { console.error(err); }
@@ -86,6 +87,7 @@ router.get('/dashboard', isLoggedIn, async (req, res) => {
 
   } catch (err) {
     console.error('Error fetching dashboard data:', err);
+    req.flash('error', 'Could not load dashboard alerts.');
   } finally {
     if (connection) {
       try { await connection.close(); } catch (err) { console.error(err); }
@@ -133,14 +135,14 @@ router.post('/login', async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      console.log('Login failed: User not found.');
+      req.flash('error', 'Login failed: User not found.');
       return res.redirect('/login');
     }
 
     const user = result.rows[0];
 
     if (!password || !user.PASSWORD_HASH) {
-      console.log('Login failed: Missing password or stored hash.');
+      req.flash('error', 'Login failed: Invalid credentials.');
       return res.redirect('/login');
     }
     
@@ -157,11 +159,12 @@ router.post('/login', async (req, res) => {
       console.log('Login successful, session created.');
       res.redirect('/dashboard');
     } else {
-      console.log('Login failed: Invalid password.');
+      req.flash('error', 'Login failed: Invalid password.');
       res.redirect('/login');
     }
   } catch (err) {
     console.error('Login error:', err);
+    req.flash('error', 'An error occurred during login.');
     res.redirect('/login');
   } finally {
     if (connection) {
@@ -225,6 +228,11 @@ router.post('/signup', async (req, res) => {
 
   } catch (err) {
     console.error('--- SIGNUP ERROR CATCH BLOCK ---', err);
+    if (err.errorNum === 1) {
+      req.flash('error', 'Signup failed: That username is already taken.');
+    } else {
+      req.flash('error', 'Signup failed. Please try again.');
+    }
     if (connection) {
       await connection.rollback(); 
     }

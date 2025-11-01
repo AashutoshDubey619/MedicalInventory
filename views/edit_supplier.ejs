@@ -1,0 +1,37 @@
+<%- include('partials/header') %>
+
+  <h2 class="mb-4">Edit Supplier</h2>
+
+  <div class="card shadow-sm">
+    <div class="card-header">
+      <h5 class="mb-0">Editing: <%= supplier.NAME %></h5>
+    </div>
+    <div class="card-body">
+      
+      <form action="/suppliers/edit/<%= supplier.SUPPLIER_ID %>" method="POST">
+        
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="name" class="form-label">Supplier Name:</label>
+            <input type="text" class="form-control" id="name" name="name" value="<%= supplier.NAME %>" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="contact_person" class="form-label">Contact Person:</label>
+            <input type="text" class="form-control" id="contact_person" name="contact_person" value="<%= supplier.CONTACT_PERSON %>">
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="phone" class="form-label">Phone:</label>
+            <input type="tel" class="form-control" id="phone" name="phone" value="<%= supplier.PHONE %>">
+          </div>
+        </div>
+        
+        <button type="submit" class="btn btn-success">Save Changes</button>
+        <a href="/suppliers" class="btn btn-light">Cancel</a>
+      </form>
+    </div>
+  </div>
+
+<%- include('partials/footer') %>

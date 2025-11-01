@@ -3,6 +3,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import session from 'express-session';
 import oracledb from 'oracledb';
+import cookieParser from 'cookie-parser';
+import flash from 'connect-flash';
 
 try {
   console.log('Forcing Oracle Thick Mode (Instant Client)...');
@@ -12,8 +14,7 @@ try {
   console.log('Oracle Thick Mode initialized successfully.');
 } catch (err) {
   console.error('CRITICAL: Error initializing Oracle Client:', err);
-  console.error('CRITICAL: Check the path in index.js -> initOracleClient()');
-  process.exit(1);
+  process.exit(1); 
 }
 
 import { initialize } from './config/db.js';
@@ -34,15 +35,21 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+app.use(cookieParser('my_secret_key_12345'));
+
 app.use(session({
   secret: 'my_secret_key_12345',
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false }
+  cookie: { secure: false } 
 }));
 
+app.use(flash());
+
 app.use((req, res, next) => {
-  res.locals.user = req.session.user; 
+  res.locals.user = req.session.user;
+  res.locals.success_messages = req.flash('success');
+  res.locals.error_messages = req.flash('error');
   next();
 });
 
@@ -62,9 +69,10 @@ async function startServer() {
     app.listen(port, () => {
       console.log(`Server http://localhost:${port} par chal raha hai`);
     });
-  } catch (err) {
+  } catch (err){
     console.error('Failed to start server:', err);
   }
-}
+  }
+
 
 startServer();

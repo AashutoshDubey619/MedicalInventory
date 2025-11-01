@@ -42,6 +42,7 @@ router.get('/', async (req, res) => {
 
   } catch (err) {
     console.error("Error fetching stock list:", err);
+    req.flash('error', 'Could not load stock list.');
   } finally {
     if (connection) {
       try { await connection.close(); } catch (err) { console.error(err); }
@@ -81,6 +82,7 @@ router.get('/add', async (req, res) => {
 
   } catch (err) {
     console.error("Error fetching data for add stock form:", err);
+    req.flash('error', 'Could not load form data. Please try again.');
   } finally {
     if (connection) {
       try { await connection.close(); } catch (err) { console.error(err); }
@@ -96,10 +98,6 @@ router.get('/add', async (req, res) => {
 
 router.post('/add', async (req, res) => {
   let connection;
-
-  console.log('--- ADD STOCK REQ.BODY ---');
-  console.log(req.body);
-  console.log('--- ADD STOCK END ---');
   
   const { 
     medicine_id, 
@@ -139,10 +137,11 @@ router.post('/add', async (req, res) => {
       b_edate: expiry_date
     }, { autoCommit: true });
 
-    console.log("New stock added successfully.");
+    req.flash('success', 'Stock added successfully!');
 
   } catch (err) {
     console.error("Error inserting new stock:", err);
+    req.flash('error', 'Failed to add stock. Please check data.');
   } finally {
     if (connection) {
       try { await connection.close(); } catch (err) { console.error(err); }
@@ -182,6 +181,7 @@ router.get('/issue', async (req, res) => {
 
   } catch (err) {
     console.error("Error fetching batches for issue form:", err);
+    req.flash('error', 'Could not load available batches.');
   } finally {
     if (connection) {
       try { await connection.close(); } catch (err) { console.error(err); }
@@ -221,10 +221,15 @@ router.post('/issue', async (req, res) => {
       b_ito: issued_to
     }, { autoCommit: true });
 
-    console.log("Stock issued successfully.");
+    req.flash('success', `Successfully issued ${quantity_issued} units.`);
 
   } catch (err) {
     console.error("Error issuing stock:", err);
+    if (err.errorNum === 20001) {
+      req.flash('error', `Failed to issue: Not enough stock available.`);
+    } else {
+      req.flash('error', 'Failed to issue stock. Check data.');
+    }
   } finally {
     if (connection) {
       try { await connection.close(); } catch (err) { console.error(err); }

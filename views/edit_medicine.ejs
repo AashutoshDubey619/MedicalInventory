@@ -1,0 +1,40 @@
+<%- include('partials/header') %>
+
+  <h2 class="mb-4">Edit Medicine Type</h2>
+
+  <div class="card shadow-sm">
+    <div class="card-header">
+      <h5 class="mb-0">Editing: <%= medicine.NAME %></h5>
+    </div>
+    <div class="card-body">
+      
+      <form action="/medicines/edit/<%= medicine.MEDICINE_ID %>" method="POST">
+        
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="name" class="form-label">Medicine Name:</label>
+            <input type="text" class="form-control" id="name" name="name" value="<%= medicine.NAME %>" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="manufacturer" class="form-label">Manufacturer:</label>
+            <input type="text" class="form-control" id="manufacturer" name="manufacturer" value="<%= medicine.MANUFACTURER %>">
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <label for="image_filename" class="form-label">Image URL:</label>
+          <input type="text" class="form-control" id="image_filename" name="image_filename" value="<%= medicine.IMAGE_FILENAME %>" placeholder="https://...">
+        </div>
+        
+        <div class="mb-3">
+          <label for="description" class="form-label">Description:</label>
+          <textarea class="form-control" id="description" name="description" rows="3" style="width: 100%;"><%= medicine.DESCRIPTION %></textarea>
+        </div>
+        
+        <button type="submit" class="btn btn-success">Save Changes</button>
+        <a href="/medicines" class="btn btn-light">Cancel</a>
+      </form>
+    </div>
+  </div>
+
+<%- include('partials/footer') %>
